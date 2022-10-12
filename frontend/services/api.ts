@@ -1,12 +1,12 @@
 import axios, { AxiosError } from 'axios';
 import { parseCookies, setCookie } from 'nookies';
 import { signOut } from '../contexts/AuthContext';
+import { AuthTokenError } from './errors/AuthTokenError';
 
 let isRefreshing = false;
 let failedRequestsQueue = [];
 
 export function setupAPIClient(ctx = undefined) {
-
   let cookies = parseCookies(ctx);
 
   const api = axios.create({
@@ -56,7 +56,8 @@ export function setupAPIClient(ctx = undefined) {
             failedRequestsQueue.forEach(request => request.onSuccess(err))
             failedRequestsQueue = [];
 
-            if (process.browser) {
+
+            if (typeof window === 'undefined') {
               signOut();
             }
 
@@ -77,9 +78,10 @@ export function setupAPIClient(ctx = undefined) {
           })
         })
       } else {
-        //deslogar usuario
-        if (process.browser) {
+        if (typeof window === 'undefined') {
           signOut();
+        } else {
+          return Promise.reject(new AuthTokenError())
         }
       }
     }

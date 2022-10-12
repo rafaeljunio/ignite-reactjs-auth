@@ -26,6 +26,7 @@ type AuthProviderProps = {
 }
 
 export function signOut() {
+  console.log('DESLOOOG')
   destroyCookie(undefined, 'nextauth.token')
   destroyCookie(undefined, 'nextauth.refreshToken')
 
